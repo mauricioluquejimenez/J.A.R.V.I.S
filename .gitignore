@@ -1,0 +1,10 @@
+# Syncthing
+.stfolder/
+.stfolder.*/
+.stversions/
+
+# Obsidian local config
+.obsidian/
+
+# Papelera temporal
+.trash/

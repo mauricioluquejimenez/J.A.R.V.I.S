@@ -23,13 +23,13 @@ This is my personal version of Just A Rather Very Intelligent System, as well kn
 
 ## Repository structure and modules
 
-- [[api]]
-- [[core]]
-- [[hardware]]
-- [[integrations]]
-- [[interface]]
-- [[sensors]]
-- [[system]]
+- [API module](./modules/api/api.md)
+- [Core module](./modules/core/core.md)
+- [Hardware module](./modules/hardware/hardware.md)
+- [Integration module](./modules/integrations/integrations.md)
+- [Interface module](./modules/interface/interface.md)
+- [Sensors module](./modules/sensors/sensors.md)
+- [System module  ](./modules/system/system.md)
 
 ---
 
