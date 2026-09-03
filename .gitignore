@@ -8,3 +8,8 @@
 
 # Papelera temporal
 .trash/
+
+# Entorno virtual y Python
+.venv/
+__pycache__/
+*.pyc
