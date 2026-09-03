@@ -13,3 +13,11 @@
 .venv/
 __pycache__/
 *.pyc
+
+# Base de datos activa local
+*.db
+
+# Configuración de DBeaver y Eclipse
+.dbeaver/
+.project
+.settings/

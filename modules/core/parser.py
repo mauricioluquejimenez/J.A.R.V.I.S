@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Any, Dict, Optional
+from modules.core.db import get_connection
 from modules.core.models import Request
 
 class Intent(BaseModel):
@@ -8,15 +9,23 @@ class Intent(BaseModel):
     params: Dict[str, Any] = Field(default_factory=dict)
 
 class Parser:
-    def parse(self, request: Request):
+    def parse(self, request: Request) -> Intent:
         text = request.msg.strip().lower()
 
-        if "abrir" in text or "abre" in text:
-            app = text.replace("abrir", "").replace("abre", "").strip()
-            return Intent(name="open_app", params={"app":app})
+        with get_connection() as con:
+            cursor = con.cursor()
+            cursor.execute("SELECT keyword, intent_id FROM keywords")
+            keywords = cursor.fetchall()
 
-        elif "tiempo" in text or "clima" in text:
-            return Intent(name="get_weather")
+        for keyword, intent_id in keywords:
+            if keyword in text:
+                params = {}
+
+                if intent_id == "open_app":
+                    app = text.replace(keyword, "").strip()
+                    params = {"app": app}
+
+                return Intent(name=intent_id, confidence=1.0, params=params)
 
         return Intent(name="unknown", confidence=0.0)
 
