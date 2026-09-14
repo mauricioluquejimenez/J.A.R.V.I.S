@@ -97,7 +97,7 @@ class Launcher:
             
         return f"Error al intentar abrir '{command}'. Fallaron todos los métodos registrados: {'; '.join(errores)}"
 
-if __name__ == "__main__":
-    launcher = Launcher()
-    print(launcher.run("football manager"))
+def run(params):
+    app_name = params.get("app", "") if isinstance(params, dict) else str(params)
+    return Launcher().run(app_name)
         

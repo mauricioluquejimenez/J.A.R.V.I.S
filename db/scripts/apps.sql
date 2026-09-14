@@ -256,3 +256,25 @@ UPDATE apps SET alias = 'firewall' WHERE name LIKE '%Firewall%';
 UPDATE apps SET alias = 'vbox' WHERE name LIKE '%VirtualBox%';
 UPDATE apps SET alias = 'odbc' WHERE name LIKE '%ODBC%';
 UPDATE apps SET alias = 'wacom' WHERE name LIKE '%Wacom%';
+
+-- 1. Crear una tabla temporal con la nueva estructura sin id autoincremental
+CREATE TABLE apps_new (
+    name TEXT NOT NULL,
+    alias TEXT,
+    os TEXT NOT NULL,
+    path TEXT NOT NULL,
+    exec_type TEXT,
+    PRIMARY KEY (name, os)
+);
+
+-- 2. Copiar los datos existentes de la tabla antigua a la nueva
+INSERT INTO apps_new (name, alias, os, path, exec_type)
+SELECT name, alias, os, path, exec_type FROM apps;
+
+-- 3. Eliminar la tabla antigua
+DROP TABLE apps;
+
+-- 4. Renombrar la nueva tabla al nombre original
+ALTER TABLE apps_new RENAME TO apps;
+
+insert into apps values ('Android Studio', '', 'windows', 'C:\Program Files\Android Studio\bin\studio64.exe', 'path')
