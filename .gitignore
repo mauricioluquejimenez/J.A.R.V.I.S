@@ -21,3 +21,7 @@ __pycache__/
 .dbeaver/
 .project
 .settings/
+
+# Archivos locales
+apps.txt
+get_routes.txt
