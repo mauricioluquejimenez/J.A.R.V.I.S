@@ -1,10 +1,16 @@
+import platform
+import psutil
 import sqlite3
 import subprocess
-import platform
 import os
 from difflib import get_close_matches
 
-class Launcher:
+try:
+    import pygetwindow as gw
+except ImportError:
+    gw = None
+
+class AppManager:
     def __init__(self, db_path="jarvis.db"):
         base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         self.db_path = os.path.join(base_dir, db_path)
@@ -54,7 +60,7 @@ class Launcher:
         con.close()
         return apps
 
-    def run(self, command):
+    def open_app(self, command):
         apps = self.get_app(command)
         current_os = platform.system().lower()
 
@@ -97,7 +103,44 @@ class Launcher:
             
         return f"Error al intentar abrir '{command}'. Fallaron todos los métodos registrados: {'; '.join(errores)}"
 
-def run(params):
+    def close_app(self, app: str) -> str:
+        app = app.strip().lower()
+        if not app:
+            return "No se ha especificado ninguna aplicación para cerrar."
+
+        if gw:
+            windows = gw.getWindowsWithTitle('')
+            matches = [w for w in windows if app in w.title.lower()]
+            if matches:
+                matches[0].close()
+                return f"Proceso '{matches[0].title}' finalizado."
+
+        closed = False
+        for proc in psutil.process_iter(['pid', 'name']):
+            try:
+                if app in proc.info['name'].lower():
+                    proc.terminate()
+                    closed = True
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+
+        if closed:
+            return f"Procesos relacionados con '{app}' finalizados."
+        return f"No se encontró ninguna ventana o proceso activo para '{app}'."
+
+def open_app(params):
+    if isinstance(params, dict) and "apps" in params:
+        res = [AppManager().open_app(app) for app in params["apps"]]
+        return " | ".join(res)
+
     app_name = params.get("app", "") if isinstance(params, dict) else str(params)
-    return Launcher().run(app_name)
+    return AppManager().open_app(app_name)
+
+def close_app(params):
+    if isinstance(params, dict) and "apps" in params:
+        res = [AppManager().close_app(app) for app in params["apps"]]
+        return " | ".join(res)
+        
+    app_name = params.get("app", "") if isinstance(params, dict) else str(params)
+    return AppManager().close_app(app_name)
         

@@ -1,8 +1,9 @@
-from pydantic import BaseModel, Field
-from typing import Any, Dict
+import re
 from difflib import get_close_matches
 from modules.core.db import get_connection
 from modules.core.models import Request
+from pydantic import BaseModel, Field
+from typing import Any, Dict
 
 class Intent(BaseModel):
     name: str
@@ -24,6 +25,15 @@ class Parser:
 
         keyword_map = {kw: intent_id for kw, intent_id in keywords_data}
 
+        if text in keyword_map:
+            return Intent(name=keyword_map[text], confidence=1.0, params={})
+
+        phrase_match = get_close_matches(text, keyword_map.keys(), n=1, cutoff=0.8)
+        if phrase_match:
+            intent_id = keyword_map[phrase_match[0]]
+            if intent_id in ("close_all", "minimize_all"):
+                return Intent(name=intent_id, confidence=1.0, params={})
+
         for i, word in enumerate(words):
             matches = get_close_matches(word, keyword_map.keys(), n=1, cutoff=0.6)
             if matches:
@@ -31,9 +41,14 @@ class Parser:
                 intent_id = keyword_map[matched_keyword]
                 
                 params = {}
-                if intent_id == "open_app":
-                    app_words = words[i + 1:]
-                    params = {"app": " ".join(app_words).strip()}
+
+                if intent_id in ("close_all", "minimize_all"):
+                    params = {}
+
+                elif intent_id in ("open_app", "close_app", "minimize_app", "maximize_app"):
+                    raw_list = " ".join(words[i + 1:]).strip()
+                    apps_list = [a.strip() for a in re.split(r'\s+y\s+|\s+e\s+|,', raw_list) if a.strip()]
+                    params = {"apps": apps_list} if len(apps_list) > 1 else {"app": raw_list}               
 
                 elif intent_id == "get_system_info":
                     with get_connection() as con:

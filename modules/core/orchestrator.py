@@ -4,7 +4,7 @@ from modules.core.db import get_connection
 from modules.core.models import Request, Response
 from modules.core.parser import Parser
 from modules.core.state import State
-from modules.system.launcher import Launcher
+from modules.system.app_manager import AppManager
 from modules.system.system_info import SystemInfo
 
 class Orchestrator:

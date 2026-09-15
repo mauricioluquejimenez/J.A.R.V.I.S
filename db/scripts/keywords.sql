@@ -66,3 +66,30 @@ INSERT INTO keywords (intent_id, keyword, mapped_column) VALUES ('get_system_inf
 INSERT INTO keywords (intent_id, keyword, mapped_column) VALUES ('get_system_info', 'discos', 'disks');
 
 UPDATE keywords SET mapped_column = NULL WHERE keyword IN ('estado', 'sistema', 'rendimiento', 'recursos', 'telemetría');
+
+DELETE FROM keywords 
+WHERE intent_id IN ('close_app', 'minimize_app', 'minimize_all', 'close_all');
+
+INSERT OR IGNORE INTO keywords (intent_id, keyword, mapped_column) VALUES
+('close_app', 'cerrar', NULL),
+('close_app', 'terminar', NULL),
+('close_app', 'matar', NULL),
+('close_app', 'apagar', NULL),
+
+('close_all', 'cerrar todo', NULL),
+('close_all', 'cerrar todas', NULL),
+('close_all', 'despejar escritorio', NULL),
+('close_all', 'limpiar escritorio', NULL),
+
+('minimize_app', 'minimizar', NULL),
+('minimize_app', 'ocultar', NULL),
+
+('minimize_all', 'minimizar todo', NULL),
+('minimize_all', 'minimizar todas', NULL),
+('minimize_all', 'ocultar todo', NULL);
+
+INSERT OR REPLACE INTO keywords (intent_id, keyword, mapped_column) VALUES 
+('maximize_app', 'maximiza', NULL),
+('maximize_app', 'maximizar', NULL),
+('maximize_app', 'agranda', NULL),
+('maximize_app', 'agrandar', NULL);

@@ -47,3 +47,31 @@ UPDATE intents SET handler_function = 'write_to_db' WHERE id = 'get_system_info'
 
 SELECT id, handler_module, handler_function FROM intents WHERE id LIKE '%system%';
 
+INSERT OR IGNORE INTO intents (id, handler_module, handler_function) VALUES
+('close_app', 'modules.system.window_manager', 'close_app'),
+('close_all', 'modules.system.window_manager', 'close_all'),
+('minimize_app', 'modules.system.window_manager', 'minimize_app'),
+('minimize_all', 'modules.system.window_manager', 'minimize_all');
+
+-- 1. Actualizar open_app para apuntar a app_manager y a la función open_app
+UPDATE intents 
+SET handler_module = 'modules.system.app_manager',
+    handler_function = 'open_app'
+WHERE id = 'open_app';
+
+-- 2. Asegurar que close_app apunte a app_manager y la función close_app
+INSERT OR REPLACE INTO intents (id, handler_module, handler_function) 
+VALUES ('close_app', 'modules.system.app_manager', 'close_app');
+
+-- 3. Asegurar las intenciones de escritorio en window_manager
+INSERT OR REPLACE INTO intents (id, handler_module, handler_function) VALUES
+('close_all', 'modules.system.window_manager', 'close_all'),
+('minimize_app', 'modules.system.window_manager', 'minimize_app'),
+('minimize_all', 'modules.system.window_manager', 'minimize_all');
+
+-- 1. Registrar la nueva intención en la tabla intents
+INSERT OR IGNORE INTO intents (id, handler_module, handler_function) 
+VALUES ('maximize_app', 'modules.system.window_manager', 'maximize_app');
+
+
+
